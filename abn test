@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viktorina Ilovasi</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e2f;
+            --text-color: #f5f6fa;
+            --text-muted: #a4b0be;
+            --border-color: #3b3b5e;
+            --primary: #5f27cd;
+            --primary-hover: #341f97;
+            --success: #2ecc71;
+            --success-bg: rgba(46, 204, 113, 0.15);
+            --danger: #ff4757;
+            --danger-bg: rgba(255, 71, 87, 0.15);
+            --warning: #ffa502;
+            --option-hover: #2f3542;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            width: 100%;
+            max-width: 700px;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: fadeIn 0.5s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .progress {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--warning);
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .timer.danger {
+            color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #ff6b81;
+        }
+
+        /* Question Styles */
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: var(--option-hover);
+            border-color: var(--text-muted);
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .option.correct {
+            background-color: var(--success-bg);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .option.wrong {
+            background-color: var(--danger-bg);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Result Styles */
+        .result-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .result-screen h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 8px solid var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .feedback {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .question-text { font-size: 1.1rem; }
+            .option { font-size: 1rem; padding: 12px 15px; }
+            .header { flex-wrap: wrap; gap: 15px; }
+            .stats { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Xom ma'lumotlar bu yerda yashiringan holda saqlanadi -->
+    <script id="quizData" type="text/plain">
+Test savollar va to'g'ri javoblar
+1. Texnik qurilmaning ish jarayonidan xarakterlovchi kattaliklar belgilangan qiymatdan sezilarli o'gsa, qurilma qanday a'zolar bilan ta'minlanadi?
+A. Sozlovchi yoki boshqaruvchi
+B. Datchiklar
+C. Aktuatorlar
+D. Maxsus eshiklar
+2. Mazkur kurs ishida o'rganilayotgan mexanik obyekt nima?
+A. Gorizontal harakatlanuvchi massa
+B. Vertikal aylanuvchi disk
+C. Suyuqlik darajasini boshqarish tizimi
+D. Issiqlik almashinuvi uskunasi
+3. Ideal prujina va dempfer hisobga olinganda, tizim qanday deb qaraladi?
+A. Chiziqli tizim
+B. Nochiziqli tizim
+C. Uzlukli (diskret) tizim
+D. Statik tizim
+4. Mаvjud chеklоvlаr shаrоitidа аmаlgа оshirilаyotgаn sifаtli bоshqаrish ... dеb nоmlаnаdi?
+A. оptimаl
+B. rоbаstli
+C. аvtоnоm
+D. ko'p o'lchаmli
+5. Massa harakatlanishi va tizim holati vaqt o'tishi bilan o'zgarishi nima deb ataladi?
+A. Dinamik jarayon
+B. Statik holat
+C. Ideal muvozanat
+D. Tasodifiy jarayon
+6. Аvtоmаtik bоshqаrish sistеmаsi nimа?
+A. аvtоmаtik bоshqаruvchi qurilmа vа bоshqаruv оb'еkti
+B. kuchаytirish vа bоshqаruv оb'еkti
+C. tеskаri аlоqа vа bоshqаruv оb'еkti
+D. tаqqоslаsh qurilmаsi vа ijrо etuvchi qurilmа
+7. Mexanik tizimda inersiya kuchini ifodalovchi element qaysi?
+A. Massa (m)
+B. Prujina (k)
+C. Amortizator (c)
+D. Tayanch nuqtasi
+8. Sozlovchi a'zo yordamida bir xil o'zgartirmay yoki keraklicha o'zgartirib chiqishdagi o'zgaruvchilarni sozlaydigan qurilmalar nima deb ataladi?
+A. RLC elektr toki zanjiri
+B. sozlovchi yoki boshqaruhvchi a'zolar
+C. reaktiv elementlar jamlanmasi
+D. sozlovchi yoki boshqaruvchi obyektlar
+9. Sozlovchi yoki boshqaruvchi obyekt deb qanday qurilmalarga aytiladi?
+A. inson ishtirokisiz boshqariluvchi qurilmalarda
+B. sozlovchi va boshqaruvchi a'zoga ega qurilmalarga
+C. inson ishiroki qisman mavjud bo'lgan qurilmalarda
+D. dahlsiz obyektlar mavjud
+10. Mashina va apparatlarda inson ishtirokisiz qandaydir fizik kattalikni berilgan qonun asosida o'zgarib turishiga nima deyiladi?
+A. sozlash qonuni
+B. avtomatik sozlash
+C. avtomatik boshqarish
+D. boshqarish qonuni
+11. Mashina va apparatlarda inson ishtirokisiz qandaydir fizik kattalikni berilgan qiymatda ushlab turishiga nima deyiladi?
+A. avtomatik sozlash
+B. avtomatik boshqarish
+C. sozlash qonuni
+D. boshqarish qonuni
+12. Energiya to'plovchi (elastik) element sifatida nima olinadi?
+A. Prujina
+B. Massa
+C. Ishqalanish kuchi
+D. Tashqi kuch
+13. Amortizator yoki ishqalanish qanday element hisoblanadi?
+A. Energiya tarqatuvchi (yutuvchi) element
+B. Energiya ishlab chiqaruvchi element
+C. Faqat inersiya elementi
+D. Statik tayanch elementi
+14. Obyektga boshqaruvchi ta'sirlarning oldindan belgilab qo'yishlar bo'yicha shakllanishi nima deyiladi?
+A. avtomatik boshqarish
+B. avtomatik sozlash
+C. boshqarish yoki sozlash qonuni
+D. sozlovchi a'zo
+15. Boshqrish va sozlash qonuniyati deb nimaga aytiladi?
+A. boshqaruvchi ta'sirlarning oldindan belgilanishi
+B. avtomatik boshqarish
+C. avtomatik sozlash
+D. sozlovchi yoki boshqaruvchi a'zo
+16. Boshqarish yoki sozlash qonuniyati yana qanday nom bilan ataladi?
+A. Avtomatik boshqarish
+B. Boshqarish algoritmi
+C. Avtomatik sozlash
+D. Sozlovchi yoki boshqaruvchi a'zo
+17. Boshqarish qonunining qanday turlari mavjud?
+A. chiziqli va egri chiziqli
+B. chiziqli va aylanasimon
+C. fizik qonunlar
+D. kimyoviy qonunlar
+18. Mexanik tizimning matematik model tuzishda qaysi asosiy qonundan foydalaniladi?
+A. Nyutonning ikkinchi qonuni
+B. Om qonuni
+C. Arximed qonuni
+D. Paskal qonuni
+19. Avtomatik sozlash asboblarining jamlanmasi nima deyiladi?
+A. avtomatik sozlash qonuni
+B. avtomatik boshqarish qurilmasi
+C. avtomatik boshqarish tizimi
+D. avtomatik boshqarish qonuni
+20. Ochiq zanjirli tizimda kirish kuchi qaysi blok orqali chiqish siljishini beradi?
+A. O'tish funksiyasi bloki
+B. Teskari aloqa bloki
+C. Faqat kuchaytiruvchi blok
+D. Qiyoslash bloki
+21. MatLabda tf() funksiyasi nima uchun ishlatiladi
+A. O'tish funksiyasini yaratish uchun
+B. Grafikni o'chirish uchun
+C. Tizimni barqarorlikka tekshirish uchun
+D. Faqat integrallash uchun
+22. O'tish funksiyasining maxrajidagi noldan farqli ildizlar nima deb ataladi?
+A. Tizim qutblari
+B. Tizim nol nuqtalari
+C. Tizim koeffitsientlari
+D. Tizim amplitudalari
+23. Tizimning pog'ona ta'siriga javobini ko'rish uchun MatLabda qaysi buyruq yoziladi?
+A. step()
+B. plot()
+C. grid on
+D. title()
+24. Obyektga ta'sir etayotgan tashqi ta'sirlar bilan bog'liqligini bildiruvchi tenglamalar sistemasi qaysi holda ma'lum bo'ladi?
+A. obyektning fizikk ifodasi ma'lum bo'lsa
+B. obyektning matematik ifodasi ma'lum bo'lsa
+C. obyekt ochiq holda bo'lsa
+D. obyekt yopiq tizim bo'lsa
+25. Obyektning matematik ifodasi berilgan bo'lsa nimani aniqlash mumkin?
+A. berilgan tashqi ta'sirlar bo'yicha boshqariluvchi o'zgaruvchini
+B. obyektning matematik modelini
+C. naykvistning turg'unlik mezonini
+D. kuchaytirish koeffisientini
+26. Berilgan tashqi ta'sirlar bo'yicha boshqariluvchi o'zgaruvchini aniqlash uchun nima ma'lum bolishi kerak?
+A. obyektning matematik ifodasi
+B. obyektning fizik ifodasi
+C. obyektning toifasini
+D. obyektning ildizini
+27. Oddiy obyektlar nimalardan tashkil topadi?
+A. bitta boshqaruvchi ta'sir va bitta boshqariluvchi o'zgaruvchi
+B. ikkita boshqaruvchi ta'sir va bir nechta boshqariluvchi o'zgaruvchi
+C. teskari aloqaga ega bo'lgan qismlardan
+D. ochiq holdagi bir nechta elementlardan
+28. Bitta boshqaruvchi ta'sir va bitta boshqariluvchi o'zgaruvchidan tashkil topgan obyektlar qanday obyekt hisoblanadi?
+A. yopiq tizimli obyekt
+B. murakkab obyekt
+C. eng soda obyekt
+D. ishlab chiqarish obyekti
+29. Har qanday obyektning ishi qanday hollarda ko'rilishi mumkin?
+A. oddiy va murakkab
+B. matematik va fizik
+C. statik va dinamik
+D. kimyoviy va statik
+30. Statik rejimda qaysi parametrlar o'zgarmas bo'ladi?
+A. ochiq va yopiq sistemalar
+B. ichki ta'sirlar
+C. chiqish signallari
+D. tashqi va boshqariluvchi ta'sirlar
+31. Tashqi va boshqariluvchi ta'sirlar qaysi rejimda o'zgarmas bo'ladi?
+A. dinamik
+B. statik rejimda
+C. ochiq tizimda
+D. yopiq tizimda
+32. Statik rejimda nimalar vaqtga bog'liq emas?
+A. ochiq va yopiq sistemalar
+B. tashqi va boshqariluvchi ta'sirlar
+C. ichki ta'sirlar
+D. chiqish signallari
+33. Tashqi va boshqariluvchi ta'sirlar qaysi rejimda vaqtga bog'liq emas?
+A. Statik rejimda
+B. Dinamik rejimda
+C. Ochiq tizimda
+D. Yopiq tizimda
+34. Obyektning statikasi o'rganilayotganda obyektning nimasi ko'rib chiqiladi?
+A. malekulyar tarkibi
+B. dinamik xarakteristikasi
+C. kvazistatsionar rejimi
+D. statik xarakteristikasi
+35. Obyektning statikasi o'rganilayotganda qanday bog'liqlik ko'rib chiqiladi?
+A. F(f1, f2,....fm)
+B. Xchiq(xchiq1, xchiq2,....xchiqn)
+C. Z(z1, z2,....zr)
+D. Xchiq=f(x)
+36. Obyekt dinamik rejimda parametrlari qanday bo'ladi?
+A. o'zgarmas
+B. o'zgaruvchan
+C. muvozanatda
+D. teskari aloqali
+37. Chiqish signalining 10% dan 90% gacha yetib borishi uchun ketgan vaqt nima?
+A. Ko'tarilish vaqti
+B. Maksimal qiymat vaqti
+C. Turg'unlashish vaqti
+D. Statik xatolik
+38. Obyekt dinamikasi o'rganilayotganda qanday ta'sirlar bilan tekshiriladi?
+A. hamma javob to'g'ri
+B. nazorat qilinuvchi
+C. nazorat qilinmaydigan
+D. boshqaruvchi o'zgaruvchi
+39. Ob'ektning differensial tenglamalar tizimini chiziqli differensial tenglamalar sistemasiga keltirish imkoniyatiga ega bo'linsa bunday boshqarish ob'ekti nima deb ataladi?
+A. nochiziqli
+B. chiziqli
+C. statik
+D. statsionar
+40. Chiziqli boshqariish obyekti deb nimaga aytiladi?
+A. obyektning dinamik xarakteristikasi nolga teng bo'lsa
+B. obyektning dinamik xarakteristikasi 1 dan katta bo'lsa
+C. obyektning differensial tenglamaasini chiziqliga aylantirish mumkin bo'lsa
+D. to'g'ri javob yo'q
+41. Boshqarish obyekti qanday holda bo'lishi mumkin?
+A. turg'un
+B. noturg'un
+C. betaraf
+D. hamma javob to'g'ri
+42. Tashqi ta'sirlar to'xtatilgandan so'ng dastlabki muvozanatga qaytsa qanday obyekt deyiladi?
+A. turg'un
+B. noturg'un
+C. betaraf
+D. turg'unlik chegarasida
+43. Turg'un obyekt deb qanday obyektga aytiladi?
+A. tashqi ta'sirlar to'xtatilgandan keyin muvozanat holga qaytsa
+B. tashqi ta'sirlar to'xtatilgandan keyin muvozanat holga qaytmasa
+C. tashqi ta'sirlar to'xtatilgandan keyin ixtiyoriy qandaydir muvozanat holatga o'rnashsa
+D. chiziq bo'lsa
+44. Noturg'un obyektlar deb qanday obyektga aytiladi?
+A. tashqi ta'sirlar to'xtatilgandan keyin muvozanat holga qaytsa
+B. tashqi ta'sirlar to'xtatilgandan keyin ixtiyoriy qandaydir muvozanat holatga o'rnashsa
+C. chiziq bo'lsa
+D. tashqi ta'sirlar to'xtatilgandan keyin muvozanat holga qaytmasa
+45. Tashqi ta'sirlar tugatilgan taqdirda ham chiqishdagi o'zgaruvi o'zgaraversa bu qanday obyekt deyiladi?
+A. turg'un
+B. noturg'un
+C. dahlsiz
+D. betaraf
+46. Chiqish signalining maksimal qiymati barqaror holatdan oshib ketishi nima deyiladi?
+A. O'tib ketish foizi (Overshoot)
+B. Statik xatolik
+C. Faza siljishi
+D. Kechikish vaqti
+47. Bir vaqtning o'zida obyekt ham turg'un, ham noturg'un ham dahlsiz bo'lishi mumkinmi?
+A. mumkin emas
+B. ulanish sxemasiga bog'liq
+C. mumkin
+D. o'rnatilayotgan muxitga bog'liq
+48. Vaqt cheksizlikka intilganda kirish va chiqish signallari orasidagi farq nima?
+A. Statik xatolik
+B. Dinamik aniqlik
+C. Maksimal og'ish
+D. Turg'unlik zaxirasi
+49. Routh-Hurwitz mezoni nima uchun xizmat qiladi?
+A. Tizim barqarorligini algebraik aniqlash uchun
+B. Faqat o'tish vaqtini hisoblash uchun
+C. Tizimning tashqi ko'rinishini chizish uchun
+D. Kirish signalini kuchaytirish uchun
+50. Tizim barqaror bo'lishi uchun xarakteristik tenglama ildizlari qayerda bo'lishi kerak?
+A. s-tekisligining chap yarim qismida
+B. s-tekisligining o'ng yarim qismida
+C. Faqat mavhum o'qda
+D. Koordinata boshida
+51. MatLabda tizim qutblarini chizish uchun qaysi buyruq qo'llaniladi?
+A. pzmap()
+B. stepinfo()
+C. feedback()
+D. zeros()
+52. Kirish signalining chiqishga aylanishi ma'lum qonuniyat asosida kechadigan qism nima?
+A. Zveno
+B. Datchik
+C. Amplituda
+D. Xatolik
+53. Zvenolar ketma-ket ulanganda ularning o'tish funksiyalari nima qilinadi?
+A. Ko'paytiriladi
+B. Qo'shiladi
+C. Ayiriladi
+D. O'zgarmas qoladi
+54. Zvenolar parallel ulanganda ularning o'tish funksiyalari nima qilinadi?
+A. Ko'paytiriladi
+B. Qo'shiladi
+C. Ayiriladi
+D. O'zgarmas qoladi
+55. Proporsional zvenoning asosiy vazifasi nima?
+A. Kirish signalini ma'lum koeffitsientga ko'paytirish
+B. Signalni vaqt bo'yicha to'plash
+C. Signalning o'zgarish tezligini aniqlash
+D. Signalni vaqt bo'yicha kechiktirish
+56. Integrallovchi zvenoning (I-zveno) chiqish signali nimaga bog'liq?
+A. Kirish signalining o'tmishiga (yig'indisiga)
+B. Faqat hozirgi vaqtdagi xatoga
+C. Kelajakdagi bashoratga
+D. Faqat maksimal qiymatga
+57. Inersion (aperiodik) zvenoning o'ziga xos xususiyati nima?
+A. Kirish signaliga vaqt kechikishi bilan javob beradi
+B. Hech qanday kechikishga ega emas
+C. Faqat o'zgarish tezligini kuchaytiradi
+D. Statik xatolikni nolga tushiradi
+58. Avtomatik boshqarish nazariyasi fanining asoschisi kim?
+A. J. Jakkar
+B. I.A.Vishnegradskiy
+C. Dj. Uatt
+D. Tomos Edison
+59. P-zvenoning k koeffitsienti ortishi tizimga qanday ta'sir qiladi?
+A. Tizim tezkorligi oshadi
+B. Tizim butunlay sekinlashadi
+C. Statik xatolik nolga teng bo'ladi
+D. Tizim inersiyasi yo'qoladi
+60. P-zvenoning yolg'iz ishlatilgandagi asosiy kamchiligi nima?
+A. Har doim statik xatolik qoldiradi
+B. Tizimni juda sekinlashtiradi
+C. Shovqinlarni kuchaytiradi
+D. Energiyani isrof qiladi
+61. I-zvenoning boshqaruv tizimidagi eng muhim vazifasi qaysi?
+A. Statik xatolikni nolga tushirish
+B. Tizimni tezlashtirish
+C. Overshootni kamaytirish
+D. Shovqinlarni filtrlash
+62. I-zvenoning kamchiligi nimada ko'rinadi?
+A. Tizimga tebranishlar olib kiradi va sustlashtiradi
+B. Statik xatolikni oshiradi
+C. Faqat hozirgi vaqt bilan ishlaydi
+D. Tizimni turg'unroq qiladi
+63. Obyektning differensial tenglamalar tizimini chiziqli tenglamalarga keltirish imkoni bo'lmasa qanday obyekt deyiladi?
+A. nochiziqli obyekt
+B. chiziqli obyekt
+C. turg'un obyekt
+D. turg'unlik chegarasidagi obyekt
+64. Nochiziqli obyekt deb nimaga aytiladi?
+A. tizim noturg'un holda bo'lsa
+B. differensial tenglamalarni chiziqli qilib bo'lmasa
+C. tizim turg'unlik darajasida yotsa
+D. tizim yopiq tizim bo'lsa
+65. Differensiallovchi (D-zveno) signalning nimasiga javob beradi?
+A. Kirish signalining o'zgarish tezligiga
+B. Signalning doimiy qiymatiga
+C. Signalning o'rtacha qiymatiga
+D. Signalning eng kichik qiymatiga
+66. D-zveno tizimda qanday vazifani bajaradi?
+A. "Tormoz" vazifasini bajarib, tebranishlarni so'ndiradi
+B. Statik xatolikni butunlay yo'qotadi
+C. Tizimni barqarorlikdan chiqaradi
+D. Signalni vaqt bo'yicha integrallaydi
+67. Sozlagichlarda chqishdagi o'zgaruvchining qiymatini yoki uning og'ishini o'lchash uchun qanday qurilma ishlatiladi?
+A. kuchaytirish elementi
+B. bajarish elementi
+C. bajaruvchi element
+D. sezgir element
+68. Sezgir element nimaga hizmat qiladi?
+A. chiqishdagi o'zgaruvchini topshiriq bo'yicha berilgan qiymatini aniqlovchi
+B. sezgir elementdan chiqayotgan kam quvvatli signalni kuchaytirishga xizmat qiladi
+C. chiqishdagi o'zgaruvchini qiymatini yoki uning og'ishini o'lchash uchun xizmat qiladi
+D. ob'ektlarga boshqaruvchi ta'sir ko'rsatish uchun xizmat qiladi
+69. Chiqayotgan kam quvvatli signalni kuchaytirishga hizmat qiladigan element qaysi?
+A. kuchaytirish elementi
+B. bajarish elementi
+C. sezgir elementi
+D. topshiriq beruvchi element
+70. Kuchaytirish elementi qanday vazifani bajaradi?
+A. Chiqayotgan signalni kuchaytirishga hizmat qiladi
+B. Chiqishdagi signalni berilgan qiymat bo'yicha aniqlaydi
+C. Berilgan qiymatni buyruq bo'yicha bajaradi
+D. Chiqishdagi elementni miqdor jihatdan rostlaydi
+71. Obyektga boshqaruvchi ta'sir ko'rsatishga hizmat qiluvchi element qaysi?
+A. o'zgartiruvchi element
+B. kuchaytirrish elementi
+C. sezgir element
+D. bajarish elementi
+72. Bajarish elementi nima vazifani bajaradi?
+A. signalni kuchaytirish
+B. buyruq berish
+C. obyektga boshqaruvchi ta'sir ko'rsatish
+D. o'zgaruvchi qiymatini yoki og'ishini hisoblaydi
+73. PD boshqaruv (P va D birga) qo'llanilganda grafikda nima kuzatiladi?
+A. Overshoot deyarli yo'qoladi va tizim tez turg'unlashadi
+B. Tebranishlar cheksiz davom etadi
+C. Grafik juda sekin ko'tariladi
+D. Statik xatolik nolga tushadi
+74. O'zgartiruvchi element nima uchun ishlatiladi?
+A. tizimlarni dinamik sifatini o'zgartiradi
+B. signalni kuchaytirish
+C. o'zidan keying elementga kerakli signal chiqarish
+D. boshqarilish vazifasini bajaradi
+75. Tizimlarning dinamik sifatini o'zgartiruvchi qurilma qaysi?
+A. o'zgartiruvchi element
+B. kuchaytirish elementi
+C. sezgir element
+D. korreksiyalovchi qurilma
+76. Korreksiyalovchi qurimaning vazifasi nima?
+A. o'zidan keying elementga kerakli signal chiqarish
+B. chiqishdagi signallarni quvvatini oshiradi
+C. obyektni boshqaradi
+D. tizimning dinamik sifatini o'zgartirish
+77. PID regulyatori qanday algoritm hisoblanadi?
+A. Teskari aloqali boshqaruv algoritmi
+B. Faqat ochiq zanjirli algoritm
+C. Statik modellashtirish algoritmi
+D. Tasodifiy sonlar algoritmi
+78. ABT larning qanday ish rejimlari mavjud?
+A. uzlukli va uzluksiz
+B. dasturiy va stabillashgan
+C. bir o'lchamli va ko'p o'lchamli
+D. bevosita va bilvosita
+79. PID boshqaruvda xatolik e(t) qanday hisoblanadi?
+A. Talab etilgan qiymat va joriy qiymat ayirmasi sifatida
+B. Faqat tashqi kuchlar yig'indisi sifatida
+C. Kirish signalining integrali sifatida
+D. Faqat joriy qiymatning o'zi
+80. PID ning Kp koeffitsienti nima uchun mas'ul?
+A. Joriy xatolikka mutanosib ta'sir ko'rsatishga
+B. O'tmishdagi xatolarni yig'ishga
+C. Kelajakdagi xatolikni bashorat qilishga
+D. Tizimni sekinlashtirishga
+81. ABT lar rostlanayotgan parameter soniga ko'ra qanday turlarga bo'linadi?
+A. stabillshgan va dasturli
+B. diskret va analog
+C. bir va ko'p o'lchamli
+D. kuzatuvchili va avtomatik
+82. PIDning Ki koeffitsienti asosiy vazifasi nima?
+A. To'plangan statik xatolikni yo'qotish
+B. Tizim tezkorligini kamaytirish
+C. Faqat tebranishlarni so'ndirish
+D. Kirish signalini kvadratga oshirish
+83. Chetlanish bo'yicha sozlash qanday tizim hisoblandi?
+A. ochiq tizim
+B. adaptiv tizim
+C. berk tizim
+D. intellektual tizim
+84. Chetlanish bo'yicha sozlash tizimining asosiy kamchiligi nimada?
+A. aniqligi past
+B. tashqi ta'sirlarga ota sezuvchan
+C. sxemasi murakkab
+D. barqarorligi doimiyligi
+85. Tеskаri аlоqа dеb … аytilаdi?
+A. signаlgа tеskаri ishоrа bеrilgаn yo'lgа
+B. yo'nаltirilgаn zvеnоlаrning uzluksiz kеtmа-kеtligigа
+C. bеrk kоnturdа shаkllаntirilgаn zvеnоlаrning kеtmа-kеtligigа
+D. sistеmаning kirish vа chiqishi оrаsidаgi yo'lgа
+86. Аsоsiy tеskаri аlоqаsi mаvjud sistеmа … sistеmа dеyilаdi?
+A. kuzаtuvchi
+B. dаsturiy
+C. оptimаl
+D. bеrk
+87. Ishning yuqori aniqligi va xalaqit beruvchi ta'sirlardan barqarorlik afzalliklari qaysi sozlash tamoyiliga mos?
+A. chetlanish bo'yisha sozlash tamoyili
+B. qo'zg'atish bo'yicha sozlash
+C. adaptatsiyalash
+D. sozlashning kombinatsiyalashgan
+88. Sistеmаning stаtik xаrаktеristikаsi nimа?
+A. kirish vа chiqish signаllаri оrаsidаgi bоg'lаnish
+B. muvоzаnаt rеjimdаgi kirish vа chiqish signаllаri оrаsidаgi bоg'lаnish
+C. sistеmаning birlik pоg'оnаli signаlgа rеаksiyasi
+D. sistеmаning impul`sli signаlgа rеаksiyasi
+89. Simulinkda xatolikni hisoblash uchun qaysi blok ishlatiladi?
+A. Sum (Math Operations) bloki
+B. Step (Sources) bloki
+C. Scope (Sinks) bloki
+D. Transfer Fcn bloki
+90. PIDning Kd koeffitsienti tizimga qanday ijobiy ta'sir beradi?
+A. Tebranishlarni so'ndiradi va turg'unlikni oshiradi
+B. Statik xatolikni oshiradi
+C. Tizimni doimiy ravishda sekinlashtiradi
+D. Signalni filtrlaydi
+91. Simulinkda natijani kuzatish uchun qaysi blokdan foydalaniladi?
+A. Scope bloki
+B. PID controller bloki
+C. Add bloki
+D. Gain bloki
+92. Ziegler-Nichols metodi nima uchun qo'llaniladi?
+A. PID koeffitsientlarini tajriba (eksperiment) yo'li bilan sozlash uchun
+B. Faqat matematik modelni chizish uchun
+C. Tizimni o'chirib qo'yish uchun
+D. Faqat statik xatolikni hisoblash uchun
+93. Avtomatik tizim ishlab chiqishdan avval nima aniqlanadi?
+A. avtomatlashtirish zaruriyati
+B. sozlanuvchi obyektlar
+C. boshqariluvchi obyektlar
+D. boshqaruvchi obyektlar
+94. Avtomatik sozlagichlarning maqsadi nima?
+A. ma'lum bir kattalik qiymatini ushlab turish
+B. avtomatik tizimni berk tizimga aylantirish
+C. avtomatik tizimni ochiq tizimga aylantirish
+D. avtomatik tizimni sozlashning qonuniyatini aniqlash
+95. Avtomatik boshqargichlarning maqsadi nima?
+A. avtomatik tizimni berk tizimga aylantirish
+B. ma'lum bir kattalikni biror qonuniyat bo'yicha o'zgartirish
+C. avtomatik tizimni ochiq tizimga aylantirish
+D. avtomatik tizimni sozlashning qonuniyatini aniqlash
+96. Ziegler-Nichols metodida I va D boshida qanday qiymatda bo'ladi?
+A. Nolga tenglashtiriladi
+B. Maksimal qiymatga qo'yiladi
+C. Birga tenglashtiriladi
+D. Tasodifiy tanlanadi
+97. Ziegler-Nichols metodida "Kritik kuchlanish" qachon aniqlanadi?
+A. Tizimda so'nmaydigan barqaror tebranishlar paydo bo'lganda
+B. Tizim butunlay to'xtaganda
+C. Grafik to'g'ri chiziq bo'lib qolganda
+D. Faqat boshlang'ich nuqtada
+98. Kritik davr nima?
+A. Tebranishlarning bir to'liq davri davomiyligi
+B. Tizimning ishdan chiqish vaqti
+C. Simulinkning ishlash vaqti
+D. Xatolikning eng kichik qiymati
+99. Chiqishdagi o'lcham belgilangan o'lcham bilan solishtirilishi qaysi qonuniyat asosida amalga oshiriladi?
+A. teskari aloqa qonuniyati
+B. avtomatik tizim
+C. ochiq tizimli aloqa
+D. to'g'ridan – to'g'ri aloqa
+100. Boshqarishning chiziqli qonuniyati qanday tenglama bilan xarekteristikalanadi?
+A. sozlagichning giporbalik tenglamasi
+B. sozlagichning ko'rsatkichli tenglamasi
+C. sozlagichning chiziqli tenglamasi
+D. sozlagichning darajali tenglamasi
+101. Teskari aloqaning ishlash prinsipi qanday?
+A. chiqishdagi signal tekshirilmasdan o'tkaziladi
+B. kirishdagi signal berilgan qiymat bilan taqqoslanadi
+C. chiqishdagi qiymatni berilgan qiymat bilan solishtiradi
+D. hamma javob noto'g'ri
+102. Avtomatik boshqarish tizimlarida signallar nima vazifani bajaradi?
+A. Axborat tashish vazifasini
+B. Qurilmani boshqarish
+C. Qurilmani yoqish
+D. Energiya keragidan ortganda avtomatik tarzda qurilmani o'chirish
+103. PID boshqaruvchini sozlashda "Engineering Art" (muhandislik san'ati) nima?
+A. Ko'rsatkichlar orasidagi optimal muvozanatni toppish
+B. Eng katta koeffitsientni tanlash
+C. Faqat eng tezkor tizim yaratish
+D. Grafikni chiroyli chizish
+104. Tizimning barqarorlik chegarasiga olib kelish qaysi metodning asosi?
+A. Ziegler-Nichols Metodi
+B. Routh-Hurwitz mezoni
+C. Laplas almashtirish usuli
+D. Koeffitsientlar usuli
+105. Lаplаs аlmаshtirishi qаndаy vаzifаni bаjаrаdi?
+A. diffеrеnsiаl tеnglаmаni еchish usuli
+B. sistеmаning strukturа sxеmаsini tuzish usuli
+C. diffеrеnsiаl tеnglаmаni yozish usuli
+D. chаstоtаviy yozishdаn vаqt bo'yichа yozishgа o'tish uslubi
+106. stepinfo() buyrug'i MatLabda qanday ma'lumotlarni beradi?
+A. O'tish jarayonining barcha ko'rsatkichlarini (vaqt, overshoot va h.k.)
+B. Faqat o'tish funksiyasi formulasini
+C. Faqat tizim qutblarini
+D. Tizimning narxini
+107. Uzаtish funksiyani qutbi dеb … аytilаdi?
+A. uzаtish funksiyasi mаxrаjining pоlinоmi ildizlаrigа
+B. uzаtish funksiyasi surаtining pоlinоmi ildizlаrigа
+C. kоmplеks tеkisligidа qutb bilаn bеlgilаngаn ildizlаrigа
+D. kоmplеks tеkisligidа dоirа bilаn bеlgilаngаn ildizlаrigа
+108. Mexanik tizimda dempfer (c) nima uchun xizmat qiladi?
+A. Energiyani isrof qilish (so'ndirish) orqali tizimni turg'unlashtiradi
+B. Energiyani saqlaydi
+C. Tezlikni cheksiz oshiradi
+D. Faqat massani ushlab turadi
+109. Teskari aloqali tizimning asosiy afzalligi nimada?
+A. Xatolikni doimiy nazorat qilib, uni minimallashtiradi
+B. Hech qanday hisob-kitob talab qilmaydi
+C. Faqat ochiq zanjirda ishlaydi
+D. Tizimni har doim sekinlashtiradi
+110. PID boshqaruvchining proporsional qismi (P) qaysi vaqt bilan ishlaydi?
+A. "Hozirgi vaqt"dagi xatolik bilan
+B. "O'tmish"dagi xatolik bilan
+C. "Kelajak"dagi xatolik bilan
+D. Faqat boshlang'ich vaqt bilan
+111. Tizimning o'tish jarayoni "silliq" bo'lishi nimaga bog'liq?
+A. Ko'rsatkichlar va sozlamalarning to'g'ri tanlanganligiga
+B. Faqat massaning kattaligiga
+C. Tashqi kuchning yo'qligiga
+D. Faqat prujina qattiqligiga
+112. Routh-Hurwitz mezoni zamonaviy boshqaruvdagi qaysi chastotaviy usullarning asosi boʻlib xizmat qiladi?
+A. Nyquist va Bode usullari
+B. Faqat PID sozlash usuli
+C. Faqat chiziqli modellashtirish
+D. Nyutonning differensial tenglamalari
+113. Tizimning chastotaviy xarakteristikalarini logarifmik masshtabda tasvirlash nima deb ataladi?
+A. Bode grafigi (Bode plot)
+B. Routh jadvali
+C. Nyquist diagrammasi
+D. Qutblar xaritasi
+114. Nyquist mezoni tizimning barqarorligini qanday aniqlash imkonini beradi?
+A. Ochiq zanjirli tizimning chastota xarakteristikasi yordamida yopiq tizim turg'unligini aniqlaydi
+B. Faqat matematik modelning koeffitsientlarini hisoblaydi
+C. Faqat statik xatolikni ko'rsatadi
+D. Tizimning faqat inersiya xususiyatini aniqlaydi
+115. Zamonaviy boshqaruv nazariyasida tizimni tavsiflash uchun o'tish funksiyasidan tashqari yana nima ishlatiladi?
+A. Holatlar fazosi (State-space) modeli
+B. Faqat Nyutonning birinchi qonuni
+C. Faqat Simulink Scope bloki
+D. Faqat statik tenglamalar
+116. Boshqarish obyekti qanday holda bo'lishi mumkin?
+A. turg'un
+B. noturg'un
+C. betaraf
+D. hamma javob to'g'ri
+117. Tizimni ma'lum bir maqsadli funksiya (masalan, minimal energiya sarfi) asosida boshqarish nima deyiladi?
+A. Optimal boshqarish
+B. Proporsional boshqarish
+C. Statik boshqarish
+D. Noaniq boshqarish
+118. Zamonaviy robot boshqaruvida "Teskarisini hisoblash dinamikasi" usuli nima uchun kerak?
+A. Robot bo'g'inlaridagi nochiziqli kuchlarni kompensatsiya qilish uchun
+B. Faqat o'tish funksiyasini chizish uchun
+C. Faqat massani kamaytirish uchun
+D. Tizimni o'chirib qo'yish uchun
+119. Agar gorizontal harakatlanuvchi massa tizimida ishqalanish koeffitsienti (c) nolga teng bo'lsa, step() funksiyasi berilganda tizim o'zini qanday tutadi?
+A. Tizim to'xtovsiz tebranib turadi (turg'un bo'lmaydi)
+B. Tizim darhol berilgan nuqtada to'xtaydi
+C. Tizim sekin-asta turg'unlashadi
+D. Tizim harakatlanmaydi
+120. Routh-Hurwitz jadvalining birinchi ustunida ishora o'zgarishi nimani anglatadi?
+A. Tizimning barqaror emasligini va o'ng yarim tekislikda ildizlar borligini
+B. Tizimning juda tezkor ekanligini
+C. Faqat statik xatolik mavjudligini
+D. Tizimning o'ta turg'un ekanligini
+121. Boshqarish obyekti berilgan nuqtaga yetib bordi, lekin u yerda to'xtamay, "sakrab" o'tib ketdi (overshoot). Bu qaysi zvenoning "aybi" bo'lishi mumkin?
+A. Proporsional koeffitsient haddan tashqari katta
+B. Differensiallovchi qism juda kuchli tormoz bermoqda
+C. Integral qism juda sust ishlamoqda
+D. Tizimda umuman teskari aloqa yo'q
+122. Tizimda juda kichik xatolik uzoq vaqt davomida saqlanib qolmoqda. Uni yo'qotish uchun "eng sabrli" va vaqt o'tishi bilan kuchayib boradigan qaysi qism yordamga keladi?
+A. Integrallovchi (I) qism
+B. Proporsional (P) qism
+C. Differensiallovchi (D) qism
+D. Faqat tashqi kuchni oshirish
+123. Avtomatik nazorat?
+A. texnologik jarayonlarda tezkor ma'lumotlarni avtomatik ravishda qabul qilish va uni qayta ishlash uchun kerakli bo'lgan sharoitlarni ta'minlaydi.
+B. texnologik jarayonlarda tezkor ma'lumotlarni avtomatik ravishda qabul qilish va uni qayta ishlash uchun kerakli bo'lgan sharoitlarni ta'minlamaydi.
+C. texnologik jarayonlarning tegishli parametrlarini avtomatik rostlovchi asboblar yordamida talab qilingan sathda saqlanishini nazarda tutadi. Bu holda odam faqat avtomatik rostlash tizimining (ART) to'g'ri ishlashini nazorat qiladi.
+D. texnologik operatsiyalarni belgilangan ketma-ketlikda avtomatik ravishda bajarilishini va boshqaruv obyektiga nisbatan bo/ladigan ta'sirlarning muayyan muttasilligini ishlab chiqishdan iborat
+124. Avtomatik rostlash… ?
+A. texnologik jarayonlarning tegishli parametrlarini avtomatik rostlovchi asboblar yordamida talab qilingan darajada saqlanishini nazarda tutadi. Bu holda odam faqat avtomatik rostlash tizimining (ART) to'g'ri ishlashini nazorat qiladi.
+B. texnologik jarayonlarda tezkor ma'lumotlarni avtomatik ravishda qabul qilish va uni qayta ishlash uchun kerakli bo'lgan sharoitlarni ta'minlamaydi.
+C. texnologik operatsiyalarni belgilangan ketma-ketlikda avtomatik ravishda bajarilishini va boshqaruv obyektiga nisbatan bo'ladigan ta'sirlarning muayyan muttasilligini ishlab chiqishdan iborat
+D. texnologik jarayonlarda tezkor ma'lumotlarni avtomatik ravishda qabul qilish va uni qayta ishlash uchun kerakli bo'lgan sharoitlarni ta'minlaydi.
+125. Avtomatik boshqarish… ?
+A. texnologik operatsiyalarni belgilangan ketma-ketlikda avtomatik ravishda bajarilishini va boshqaruv obyektiga nisbatan bo'ladigan ta'sirlarning muayyan uzuliksizligini ishlab chiqishdan iborat
+B. texnologik jarayonlarning tegishli parametrlarini avtomatik rostlovchi asboblar yordamida talab qilingan sathda saqlanishini nazarda tutadi va uzulikli ishlab chiqishdan iborat
+C. texnologik jarayonlarda tezkor ma'lumotlarni avtomatik ravishda qabul qilish va uni qayta ishlash uchun kerakli bo'lgan sharoitlarni ta'minlashdan iborat
+D. texnologik jarayonlarda tezkor ma'lumotlarni avtomatik ravishda qabul qilish va uni qayta ishlash uchun kerakli bo'lgan sharoitlarni ta'minlashdan iborat
+126. Rostlanuvchi obyekt… ?
+A. Moddiy va energetik balansga rioya qiladigan mashina yoki apparat
+B. Moddiy rostlagichlar balansiga rioya qiladigan mashina yoki apparat
+C. Moddiy summatorlar balansiga rioya qiladigan mashina yoki apparat
+D. Moddiy datchik balansga rioya qiladigan mashina yoki apparat
+127. Ziegler-Nichols metodida nima uchun boshida integral va differensial qismlar nolga tenglashtiriladi?
+A. Tizimni faqat barqarorlik chegarasiga olib keladigan sof kuchaytirish koeffitsientini topish uchun
+B. Chunki ular tizimga har doim xalaqit beradi
+C. Simulink bu bloklarsiz ishlay olmagani uchun
+D. Hisob-kitobni qiyinlashtirmaslik uchun
+128. Agar Simulink modelida Scope (ossillograf) grafigi cheksizlikka qarab ketayotgan bo'lsa, bu nimadan dalolat beradi?
+A. Tizim turg'un emas (barqarorlik yo'qolgan)
+B. Tizim juda aniq ishlamoqda
+C. Statik xatolik nolga tenglashgan
+D. Simulyatsiya vaqti tugagan
+129. Matlab dasturini qanday qismlarga ajratiladi?
+A. matlab tili, matlab muhiti, matematik vazifalar kutubxonasi, mahsus boshqarish, dastur intrfeysi
+B. matlab tili, dastur interfeysi, matlab muhiti
+C. matlab muhiti, mahsus boshqarish, matlab tili
+D. matlab tili, darstur interfeysi, matematik vazifalar kutubxonasi
+130. Matlab tizimining dasturiy komponentlari?
+A. Matlab, Simulink, Blockset, Toolbox
+B. Matlab, Simulink, Blockset, plot
+C. Simulink, Blockset Matlab, zeros
+D. Simulink, Blockset, one
+131. Matlab interfeysi qanday oynalarni o'z ichiga oladi?
+A. Command window, Command history, Current directory, Workspace
+B. Command window, Workspace, Simulink
+C. Blockset, Command History, Current directory, Toolbox
+D. Toolbox, Command window, Command history, Workspace
+132. Command Window oynasi….?
+A. tizimning asosiy oynasi bo'lib, bunda foydalanuvchi savol beradi tizim esa javob beradi
+B. avvalgi savollar jumladan xatolar ro'yhati keltiriladi
+C. Matlabdan chiqishgacha bo'lgan va ishchi hotirada saqlanayotgan joriy o'zgaruvchilar ro'yhati ko'rsatiladi
+D. Matlab instrumentlar oynasi panelida ro'yhatda ko'rsatilgan papkaning ichidagilar ko'rsatiladi
+133. Command history oynasi…?
+A. avvalgi savollar jumladan xatolar ro'yhati keltiriladi
+B. Matlabdan chiqishgacha bo'lgan va ishchi hotirada saqlanayotgan joriy o'zgaruvchilar ro'yhati ko'rsatiladi
+C. Matlab instrumentlar oynasi panelida ro'yhatda ko'rsatilgan papkaning ichidagilar ko'rsatiladi
+D. tizimning asosiy oynasi bo'lib, bunda foydalanuvchi savol beradi tizim esa javob beradi
+134. Workspace oynasi…..?
+A. tizimning asosiy oynasi bo'lib, bunda foydalanuvchi savol beradi tizim esa javob beradi
+B. Matlab instrumentlar oynasi panelida ro'yhatda ko'rsatilgan papkaning ichidagilar ko'rsatiladi
+C. avvalgi savollar jumladan xatolar ro'yhati keltiriladi
+D. Matlabdan chiqishgacha bo'lgan va ishchi hotirada saqlanayotgan joriy o'zgaruvchilar ro'yhati ko'rsatiladi
+135. Matlab dasturida matritsalarni summasini topish qaysi funksiya orqali topiladi?
+A. sum
+B. inv
+C. rand
+D. det
+136. Matlab dasturida teskari matritsa qaysi funksiya orqali topiladi?
+A. inv
+B. sum
+C. det
+D. rand
+137. Matlab dasturida matritsani determinati qaysi funksiya orqali topiladi?
+A. det
+B. rand
+C. inv
+D. sum
+138. Matlab dasturida 15²+12³ quyidagi ifoda qanday yoziladi?
+A. 15^2+12^3
+B. 15.^2+12.^3
+C. sqrt(15)+sqrt(150)
+D. 15%2+12%2
+139. Matlab dasturida ildizdan chiqarish qaysi funksiya orqali amalga oshiriladi?
+A. sqrt(x)
+B. pow2(x)
+C. fix(x)
+D. rat(x)
+140. Matlab dasturida modulga olish funksiyasi?
+A. abs(x)
+B. fix(x)
+C. inf
+D. sqrt(x)
+141. Matlabda cheksizlik funksiyasini toping?
+A. inf
+B. sqrt
+C. abs(x)
+D. fix(x)
+142. D-zveno nima uchun "kelajakka qarovchi" zveno deb ataladi?
+A. Chunki u xatolikning o'zgarish tezligiga qarab, keyingi holatni bashorat qiladi va chora ko'radi
+B. Chunki u faqat o'tmishdagi xatolarni hisoblaydi
+C. Chunki u tizimni to'xtatib qo'yadi
+D. Chunki u faqat raqamli tizimlarda ishlaydi
+143. MatLabda teskari aloqali (feedback) yopiq tizimning umumiy o'tish funksiyasini hisoblash uchun qaysi buyruq qulay?
+A. feedback(G1, G2);
+B. series(G1, G2);
+C. parallel(G1, G2);
+D. sum(G1, G2);
+144. Matlab dasturi oynasi menyusidagi File buyrug'ining vazifasini toping?
+A. foydalanuvchining fayllar bilan ishlashiga mo'ljallangan
+B. joriy grafik oynasida grafik imkoniyatlardan foydalanishga mo'ljallangan
+C. dasturlash rejimida ishlashga mo'ljallangan
+D. workspace xotirasi sohasi ichidagilarni ko'rishga mo'ljallangan
+145. MATLAB da den = [1 0 10] deb e'lon qilingan tizimda fizik jihatdan qaysi element mavjud emas deb hisoblanadi?
+A. Amortizator yoki ishqalanish (c=0)
+B. Massa (m=0)
+C. Prujina (k=0)
+D. Tashqi kuch (F=0)
+146. Matlab dasturi oynasi menyusidagi Plots buyrug'ining vazifasini toping?
+A. joriy grafik oynasida grafik imkoniyatlardan foydalanishga mo'ljallangan
+B. workspace hotirasi sohasi ichidagilarni ko'rishga mo'ljallangan
+C. dasturlash rejimida ishlashga mo'ljallangan
+D. tez faollashtiriladigan ochiq oynalar ro'yhati
+147. Matlab dasturi girafikga qaysi buyruq yordamida nom beriladi?
+A. title ('nomi')
+B. name (nomi)
+C. xlabel('nomi')
+D. ylabel('nomi')
+148. Matlab dasturiga y=3x³+4x²-10 ifoda to'g'ri kiritilgan qatorni belgilang?
+A. 3*x.^3+4*x.^2-10
+B. 3*x^3+4*x^2-10
+C. 3*x^(3)+4*x^(2)-10
+D. 3*sqrt(x^3)+4*sqrt(4^2)-10
+149. MATLAB'da step(G) grafigi juda sekin ko'tarilayotgan bo'lsa, stepinfo natijasidagi qaysi ko'rsatkich mantiqan juda katta qiymatga ega bo'ladi?
+A. RiseTime (Ko'tarilish vaqti)
+B. Overshoot (O'tib ketish foizi)
+C. PeakTime (Maksimal qiymat vaqti)
+D. SettlingMin (Minimal turg'unlashish)
+150. Matlab dasturida nolli matritsa qaysi funksiya orqali hosil qilinadi?
+A. zeros(m,n)
+B. rand(m,n)
+C. hild(n)
+D. tril(A)
+151. Matlab dasturida dioganal matritsa funksiyasi?
+A. diag(m,n)
+B. Triu(A)
+C. mean(A)
+D. det(A)
+152. MATLAB da num = [5]; den = [1 3 10]; kodi bilan yaratilgan tizimda statik xatolikni kamaytirish uchun num massividagi qiymatni oshirish qaysi zveno effektiga o'xshaydi?
+A. Proporsional (P) boshqaruv effektiga
+B. Faqat Differensiallovchi (D) zveno effektiga
+C. Faqat Integrallovchi (I) zveno effektiga
+D. Tizimni butunlay o'chirib qo'yishga
+153. Robot bo'g'inining harakatini tavsiflovchi matematik modelni tuzishda Nyutonning ikkinchi qonuni (F=ma) qanday mantiq bilan qo'llaniladi?
+A. Bo'g'inga ta'sir qilayotgan barcha tashqi kuchlar, ishqalanish va elastiklik kuchlari yig'indisi inersiya kuchiga tenglanadi
+B. Faqat robotning og'irligi hisobga olinadi, inersiya kuchi e'tiborga olinmaydi
+C. Faqat bo'g'inning burchak tezligi hisoblanadi
+D. Matematik modelda faqat prujina kuchi hisobga olinadi
+154. Robotning 6-DOF (olti erkinlik darajali) bo'g'inli mexanizmi uchun o'tish funksiyasi nimani aniqlashga yordam beradi?
+A. Berilgan kirish kuchi (yoki kuchlanish) natijasida robot bo'g'inining qanchalik siljishini (chiqish signali)
+B. Faqat robotning tashqi ko'rinishini chizishni
+C. Robotning batareya quvvatini hisoblashni
+D. Robotning faqat statik holatdagi vaznini
+155. Robot manevr bajarayotganda (masalan, qo'li bilan buyumni ushlaganda) tebranishlarni (overshoot) kamaytirish uchun PID tekshirgichning qaysi qismi eng muhim "tormoz" vazifasini bajaradi?
+A. Differensiallovchi (D) qism
+B. Proporsional (P) qism
+C. Integrallovchi (I) qism
+D. Faqat tashqi to'siqlar
+156. Robot bo'g'ini berilgan burchakka yetib bordi, biroq 1-2 daraja xatolik bilan to'xtadi (etib bormadi). Bu statik xatolikni yo'qotish uchun qaysi boshqaruv elementini kuchaytirish kerak?
+A. Integrallovchi (I) qismni, chunki u xatolikni vaqt bo'yicha yig'ib boradi
+B. Faqat D-qismni, chunki u tezlikni oshiradi
+C. P-qismni nolga tushirish kerak
+D. Robotni o'chirib-yoqish kerak
+157. Routh-Hurwitz mezoni robot boshqaruvida nima uchun o'ta muhim hisoblanadi?
+A. Robot boshqaruv tizimi barqaror ishlashini (cheksiz tebranishga tushib ketmasligini) nazariy isbotlash uchun
+B. Robotning maksimal tezligini o'lchash uchun
+C. Faqat robotning rangini tanlash uchun
+D. Robot datchiklari sonini aniqlash uchun
+158. Matlab dasturida matritsalarni o'sish tartibida joylashtirish funksiyasini toping?
+A. sort
+B. sum(A)
+C. det(A)
+D. zeros(m,n)
+159. Agar robot bo'g'inining qutblari (poles) MatLab dagi pzmap grafigida o'ng yarim tekislikka o'tib ketsa, bu robot uchun nimani anglatadi?
+A. Robot boshqaruvni yo'qotadi va uning harakati beqaror (xavfli) bo'lib qoladi
+B. Robot yanada aqlli va tezkor bo'ladi
+C. Robotning statik xatoligi mantiqan nolga tenglashadi
+D. Robot faqat chapga harakatlana oladi
+160. Mexanik tizimni chiziqli deb qarash uchun qanday shart bajarilishi kerak?
+A. Prujina va dempferning xususiyatlari ideal (o'zgarmas) bo'lishi kerak
+B. Tizimda faqat bitta massa bo'lishi kerak
+C. Tizim faqat vertikal harakatlanishi kerak
+D. Tashqi kuch har doim nolga teng bo'lishi kerak
+161. Ochiq zanjirli tizimning o'tish funksiyasi mantiqan nimani ifodalaydi?
+A. Tizim chiqish siljishining kirish kuchiga nisbatini
+B. Faqat tizimning og'irligini
+C. Faqat vaqt davomiyligini
+D. Kirish signalining o'zgarish tezligini
+162. Matlab dasturida grid funksiyasining vazifasi…?
+A. avtomatik koordinata to'rini chizish
+B. grafikning ixtiyoriy maydoniga matn chiqarish
+C. chiziqli mashtabda grafiklar yasash
+D. abtissa va ordinate o'qlari nomlari
+163. Matlab dasturida chiziqli masshtabda grafiklar yasash buyrug'i berilgan javobni toping?
+A. plot
+B. stem
+C. stairs
+D. bar
+164. MATLAB da misoll = tf(num, den) buyrug'i bajarilgandan so'ng, num massivi nimani anglatadi?
+A. O'tish funksiyasining suratidagi koeffitsientlarni
+B. Tizimning faqat turg'unlashish vaqtini
+C. O'tish funksiyasining maxrajini
+D. Faqat prujina qattiqligini
+165. Tizimning "aniqligini" belgilovchi asosiy ko'rsatkich qaysi?
+A. Statik xatolik
+B. Ko'tarilish vaqti
+C. Maksimal qiymat vaqti
+D. Tizimning rangi
+166. Matlab dasturida ma'lumotlani ekranga chiqarish funksiyasi qaysi javobda to'g'ri ko'rsatilgan?
+A. fprintf(x), disp(x)
+B. print(x), disp(x)
+C. integrall(fun, xmax, xmin)
+D. bar
+167. Matlab dasturidagi ustun ko'rinishidagi diogrammani yaratish funksiyasi?
+A. bar
+B. hist
+C. stairs
+D. pie
+168. Matlab dasturida ma'lumotlarni kiritish funksiyasi qaysi qatorda to'g'ri ko'rsatilgan?
+A. input
+B. output
+C. plot
+D. bar
+169. Chiqish signali barqaror holat atrofidagi ma'lum xatolik oralig'iga kirishi va undan chiqib ketmasligi uchun ketgan vaqt nima deyiladi?
+A. Turg'unlashish vaqti
+B. O'tib ketish foizi
+C. Inersiya vaqti
+D. Birinchi tebranish davri
+170. Butun sonli o'zgaruvchilarni ifodalash uchun qaysi ma'lumot turidan foydalaniladi?
+A. int
+B. float
+C. str
+D. bool
+171. Routh-Hurwitz jadvalining birinchi ustunidagi barcha elementlar musbat bo'lsa, tizim haqida qanday xulosa qilinadi?
+A. Tizim to'liq barqaror hisoblanadi
+B. Tizim beqaror va xavfli
+C. Tizimda tebranishlar cheksiz ortadi
+D. Tizimda massa mavjud emas
+172. Satrli o'zgaruvchilarni ifodalash uchun qaysi ma'lumot turidan foydalaniladi?
+A. int
+B. float
+C. str
+D. bool
+173. Mantiqiy o'zgaruvchilarni ifodalash uchun qaysi ma'lumot turidan foydalaniladi?
+A. int
+B. float
+C. str
+D. bool
+174. Matlab dasturida komentariya yozish uchun qaysi belgidan foydalaniladi?
+A. %
+B. #
+C. //
+D. @
+175. Matlab dasturida 3D girafik hosil qilish uchun qaysi funksiyadan foydalaniladi?
+A. surf(x,y,z)
+B. meshgrid(x,y)
+C. plot(x,y)
+D. disp(x,y)
+176. Matlab dasturida 3D girafik hosil qilish uchunx va y ga qiymat berish uchun qaysi funksiyadan foydalaniladi?
+A. surf(x,y,z)
+B. meshgrid(x,y)
+C. plot(x,y)
+D. disp(x,y)
+177. Tizim qutblari s-tekisligining o'ng yarim qismida joylashsa, bu nimani anglatadi?
+A. Tizim beqaror ekanligini
+B. Tizim juda tezkor ekanligini
+C. Tizimda statik xatolik yo'qligini
+D. Tizim faqat MATLAB da ishlay olishini
+178. Matlab dastida chiziqli va yuqori darajali tenglamalarni yechimini topish funksiyasi to'g'ri ko'rsatilgan javobni aniqlang?
+A. roots(A)
+B. det(A)
+C. inv(A)
+D. rank(A)
+179. Matlab so'zining ma'nosi qaysi javobda to'g'ri berilgan?
+A. MATLAB -"Matrix Laboratory" matritsaviy laboratoriya
+B. MATLAB -"Math Laboratory" matematik laboratoriya
+C. MATLAB -"Math Laboratory" matritsaviy laboratoriya
+D. MATLAB -"Matrix Laboratory" matematik laboratoriya
+180. Matlab dasturi qaysi kompaniya tomonidan ishlab chiqarilgan?
+A. MathWork
+B. Labcenter Electronics
+C. Autodesk
+D. Askom
+181. Matlab tizimida dastur tuzish uchun qaysi oynadan foydalaniladi?
+A. Script, fuction
+B. Simulink
+C. Workspace
+D. Script, Workspace
+182. Nima uchun P-zveno (proporsional) robotni berilgan nuqtaga aniq olib borolmaydi?
+A. Chunki u har doim statik xatolikni qoldiradi
+B. Chunki u juda sekin ishlaydi
+C. Chunki u kelajakni bashorat qiladi
+D. Chunki uning inersiyasi juda katta
+183. Simulink kutubxonasidagi Divide qanday blok?
+A. sonning moduli
+B. yig'indisini hisoblash bloki
+C. signal belgisini aniqlash bloki
+D. bo'lish bloki
+184. Simulink paketidagi Math Function blokining qaysi funksiyasi orqali sonning kvadratini hisoblash mumkin?
+A. square
+B. add
+C. pow
+D. mod
+185. Integrallovchi zveno (I-zveno) qanday qilib xatolikni nolga tushiradi?
+A. Kichik xatolikni ham vaqt davomida to'plab (yig'ib) borishi orqali
+B. Signalni darhol kesib tashlash orqali
+C. Tizimni tormozlash orqali
+D. Faqat hozirgi xatoga qarab ish yuritishi orqali
+186. Simulink paketidagi Transfer Fcn qanday blok?
+A. uzatish funksiyasi bloki
+B. hosilani bloklash bloki
+C. hosilani hisoblash bloki
+D. integrallovchi blok
+187. Simulink paketidagi Sum …..?
+A. yig'indini hisoblash bloki
+B. ko'paytirish bloki
+C. signal belgisini aniqlash bloki
+D. kuchaytirgichlar
+188. D-zveno (differensiallovchi) nima uchun "tormoz" vazifasini bajaradi?
+A. Xatolik o'zgarish tezligiga qarab tebranishlarni so'ndirgani uchun
+B. Statik xatolikni oshirgani uchun
+C. Tizimni sekinlashtirgani uchun
+D. Signalni kvadratga oshirgani uchun
+189. Simulink paketidagi Gain va Matrix Gain bu…….?
+A. kuchaytirgichlar
+B. signal belgisini aniqlash bloki
+C. ko'paytirish bloki
+D. yig'indisini hisoblash bloki
+190. Simulink paketidagi Math Function bloki……?
+A. matematik funksiyalarni hisoblash bloki
+B. yig'indini hisoblash bloki
+C. ko'paytirish bloke
+D. trigonometric funksiyalarni hisoblash bloki
+191. PID boshqaruvchidagi Kd koeffitsienti ortishi grafikda qanday namoyon bo'ladi?
+A. Overshoot (sakrash) kamayadi va tizim silliqroq ko'tariladi
+B. Tizim tebranishi kuchayadi
+C. Statik xatolik keskin ortadi
+D. Tizim ko'tarilishdan to'xtaydi
+192. Ziegler-Nichols metodida kritik davr qanday aniqlanadi?
+A. So'nmaydigan tebranishlarning bir to'liq davrini o'lchash orqali
+B. Tizim o'chirilgan vaqtdan boshlab
+C. Faqat matematik formula yordamida
+D. Simulink modelini o'chirib-yoqish orqali
+193. Simulink paketidagi Logical Operation bloki……?
+A. mantiqiy amallar bloki
+B. matematik funksiyalarni hisoblash bloki
+C. trigonometric funksiyalarni hisoblash bloki
+D. minimal va maksimal qiymatlarni aniqlash bloki
+194. MATLAB dasturining asosiy qo'llanilish sohasi qaysi?
+A. Matematika va injiniring hisob-kitoblari
+B. Moliya bozorlarini tahlil qilish
+C. Animatsion multfilm yaratish
+D. Antivirus dasturi ishlab chiqish
+195. Nima uchun real tizimlarda D-zvenoni past chastotali filtr bilan qo'llash tavsiya etiladi?
+A. Chunki u yuqori chastotali shovqinlarga juda sezgir
+B. Chunki u tizimni juda qizitib yuboradi
+C. Chunki u faqat past kuchlanishda ishlaydi
+D. Chunki u massani kamaytiradi
+196. MATLABda matritsalarni yaratish uchun ishlatiladigan asosiy element nima?
+A. Kvadrat qavs [ ]
+B. Dumaloq qavs ( )
+C. Jingalak qavs { }
+D. Nuqta-vergul ;
+197. MATLABning Workspace nima uchun xizmat qiladi?
+A. O'zgaruvchilarni ko'rsatish va boshqarish
+B. Grafik oynalarni sozlash
+C. Fayllarni siqish
+D. Audio fayllarni ijro qilish
+198. MATLAB dasturida funksiyalarni saqlash uchun qanday fayl kengaytmasi ishlatiladi?
+A. .m
+B. .mat
+C. .exe
+D. .txt
+199. Command Window oynasining vazifasi nima?
+A. Buyruqlarni kiritish va bajarish
+B. Grafiklarni tahrirlash
+C. Fayllarni kompilyatsiya qilish
+D. Asbob panelini sozlash
+200. MATLABda "clc" buyrug'i nima qiladi?
+A. Ekranni tozalaydi
+B. O'zgaruvchilarni o'chiradi
+C. Grafik oynani yopadi
+D. Matritsani ko'paytiradi
+201. MATLABda matritsa o'lchamini aniqlash uchun qaysi funksiya ishlatiladi?
+A. size
+B. name
+C. print
+D. dim
+202. MATLABda Simulink moduli nimalar uchun qo'llaniladi?
+A. Tizimlarni modellashtirish va simulyatsiya qilish
+B. Video montaj qilish
+C. Server sozlash
+D. Elektron pochta yuborish
+203. MATLABda "hold on" buyrug'i nima vazifa bajaradi?
+A. Bir nechta grafiklarni bitta oynada ko'rsatadi
+B. Grafikni o'chiradi
+C. Rangni o'zgartiradi
+D. Matritsani transpozitsiya qiladi
+204. MATLABda yangi skript yaratish uchun qaysi tugma ishlatiladi?
+A. New Script
+B. New Figure
+C. Run
+D. Edit
+205. MATLABda help buyrug'i nima qiladi?
+A. Funksiya haqida ma'lumot beradi
+B. Grafikni o'chiradi
+C. Dastur oynasini tozalaydi
+D. .m faylni kompilyatsiya qiladi
+    </script>
+
+    <div class="container" id="app">
+        <!-- Loading -->
+        <div id="loading" style="text-align:center; font-size:1.5rem; padding:50px;">
+            Savollar yuklanmoqda...
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="header">
+                <div class="progress">Savol <span id="current-q">1</span> / <span id="total-q">0</span></div>
+                <div class="timer-container">
+                    <span>⏳</span>
+                    <div class="timer" id="timer">30</div>
+                </div>
+                <button class="btn btn-danger" id="finish-btn">Tugatish</button>
+            </div>
+            
+            <div class="question-text" id="question-text">Savol matni</div>
+            
+            <div class="options" id="options-container">
+                <!-- Variantlar JS orqali qo'shiladi -->
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="result-screen hidden">
+            <h2>Natijalar</h2>
+            
+            <div class="score-circle">
+                <span id="res-percent">0</span>%
+            </div>
+
+            <div class="feedback" id="res-feedback">A'lo</div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="res-total">0</span>
+                    <span class="stat-label">Jami savollar</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="res-correct">0</span>
+                    <span class="stat-label">To'g'ri javoblar</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="res-wrong">0</span>
+                    <span class="stat-label">Noto'g'ri / Javobsiz</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="location.reload()">Qayta urinib ko'rish</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loadingScreen = document.getElementById('loading');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const currentQEl = document.getElementById('current-q');
+        const totalQEl = document.getElementById('total-q');
+        const timerEl = document.getElementById('timer');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const finishBtn = document.getElementById('finish-btn');
+
+        // State Variables
+        let allQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 30;
+        let timerInterval;
+        let nextTimeout;
+        let isAnswered = false;
+
+        // 1. Data Parser Function
+        function parseRawData() {
+            const rawData = document.getElementById('quizData').textContent.trim();
+            const lines = rawData.split('\n').map(l => l.trim()).filter(l => l);
+            
+            let questions = [];
+            let currentQ = null;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                
+                // Regex: Starts with digit(s) followed by a dot
+                if (/^\d+\./.test(line)) {
+                    if (currentQ && currentQ.options.length === 4) {
+                        questions.push(currentQ);
+                    }
+                    currentQ = {
+                        text: line.replace(/^\d+\.\s*/, ''),
+                        options: [],
+                        correctOptionOriginalText: '' 
+                    };
+                } 
+                // Regex: Starts with A., B., C., or D.
+                else if (/^[A-D]\./.test(line) && currentQ) {
+                    let optText = line.replace(/^[A-D]\.\s*/, '');
+                    currentQ.options.push(optText);
+                    
+                    // Asl ma'lumotlarda to'g'ri javob har doim A variantida berilgan (fakt)
+                    if (line.startsWith('A.')) {
+                        currentQ.correctOptionOriginalText = optText;
+                    }
+                }
+            }
+            if (currentQ && currentQ.options.length === 4) {
+                questions.push(currentQ);
+            }
+            return questions;
+        }
+
+        // 2. Fisher-Yates Shuffle
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // 3. Initialize Quiz
+        function initQuiz() {
+            allQuestions = parseRawData();
+            if (allQuestions.length === 0) {
+                loadingScreen.textContent = "Xatolik: Savollar topilmadi.";
+                return;
+            }
+
+            // Shuffle questions
+            allQuestions = shuffleArray(allQuestions);
+            
+            totalQEl.textContent = allQuestions.length;
+            
+            loadingScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        // 4. Load Single Question
+        function loadQuestion() {
+            isAnswered = false;
+            timeLeft = 30;
+            timerEl.textContent = timeLeft;
+            timerEl.classList.remove('danger');
+            
+            clearInterval(timerInterval);
+            startTimer();
+
+            const q = allQuestions[currentQuestionIndex];
+            currentQEl.textContent = currentQuestionIndex + 1;
+            questionTextEl.textContent = q.text;
+            
+            optionsContainer.innerHTML = '';
+            
+            // Shuffle options
+            let shuffledOptions = shuffleArray([...q.options]);
+            
+            shuffledOptions.forEach((optText, index) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                
+                // Letter prefix A, B, C, D
+                const letter = String.fromCharCode(65 + index);
+                optDiv.innerHTML = `<strong>${letter}.</strong> <span>${optText}</span>`;
+                
+                // Store actual text for checking correctness later
+                optDiv.dataset.text = optText;
+                
+                optDiv.onclick = () => handleSelectOption(optDiv, q.correctOptionOriginalText);
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        // 5. Handle Option Click
+        function handleSelectOption(selectedDiv, correctAnswerText) {
+            if (isAnswered) return;
+            isAnswered = true;
+            clearInterval(timerInterval);
+            
+            const allOptionDivs = optionsContainer.querySelectorAll('.option');
+            const selectedText = selectedDiv.dataset.text;
+            
+            allOptionDivs.forEach(div => {
+                div.classList.add('disabled');
+                
+                // To'g'ri javobni yashil qilish
+                if (div.dataset.text === correctAnswerText) {
+                    div.classList.add('correct');
+                }
+            });
+
+            // Tekshirish
+            if (selectedText === correctAnswerText) {
+                score++;
+            } else {
+                selectedDiv.classList.add('wrong');
+            }
+
+            // Keyingi savolga avtomatik o'tish (2.5 soniya kutish)
+            nextTimeout = setTimeout(nextQuestion, 2500);
+        }
+
+        // 6. Timer System
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                
+                if (timeLeft <= 5) {
+                    timerEl.classList.add('danger');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleTimeOut() {
+            isAnswered = true;
+            const q = allQuestions[currentQuestionIndex];
+            const allOptionDivs = optionsContainer.querySelectorAll('.option');
+            
+            allOptionDivs.forEach(div => {
+                div.classList.add('disabled');
+                if (div.dataset.text === q.correctOptionOriginalText) {
+                    div.classList.add('correct'); // To'g'ri javobni ko'rsatish
+                }
+            });
+
+            nextTimeout = setTimeout(nextQuestion, 2500);
+        }
+
+        // 7. Next Question or Finish
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < allQuestions.length) {
+                // Kichik animatsiya effekti uchun
+                quizScreen.style.animation = 'none';
+                quizScreen.offsetHeight; 
+                quizScreen.style.animation = 'fadeIn 0.4s ease-in-out';
+                
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // 8. Result Screen
+        function showResults() {
+            clearInterval(timerInterval);
+            clearTimeout(nextTimeout);
+            
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            const total = allQuestions.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('res-total').textContent = total;
+            document.getElementById('res-correct').textContent = score;
+            document.getElementById('res-wrong').textContent = total - score;
+            document.getElementById('res-percent').textContent = percentage;
+
+            const feedbackEl = document.getElementById('res-feedback');
+            const scoreCircle = document.querySelector('.score-circle');
+
+            if (percentage >= 90) {
+                feedbackEl.textContent = "A'lo natija! 🎉";
+                feedbackEl.style.color = "var(--success)";
+                scoreCircle.style.borderColor = "var(--success)";
+            } else if (percentage >= 60) {
+                feedbackEl.textContent = "Yaxshi natija! 👍";
+                feedbackEl.style.color = "var(--warning)";
+                scoreCircle.style.borderColor = "var(--warning)";
+            } else {
+                feedbackEl.textContent = "Qayta urinib ko'ring! 📚";
+                feedbackEl.style.color = "var(--danger)";
+                scoreCircle.style.borderColor = "var(--danger)";
+            }
+        }
+
+        // Event Listeners
+        finishBtn.addEventListener('click', () => {
+            if(confirm("Testni hozir tugatmoqchimisiz? Javob berilmagan savollar noto'g'ri deb hisoblanadi.")) {
+                showResults();
+            }
+        });
+
+        // App Start
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
