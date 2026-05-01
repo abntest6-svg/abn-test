@@ -6,26 +6,26 @@
     <title>Viktorina Ilovasi</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --container-bg: #1e1e2f;
+            --bg-color: #0e1621; /* Telegram dark background */
+            --container-bg: #17212b; /* Telegram dark surface */
             --text-color: #f5f6fa;
-            --text-muted: #a4b0be;
-            --border-color: #3b3b5e;
-            --primary: #5f27cd;
-            --primary-hover: #341f97;
+            --text-muted: #8a9ba8;
+            --border-color: #2b3a4a;
+            --primary: #5288c1; /* Telegram blue */
+            --primary-hover: #4676a9;
             --success: #2ecc71;
             --success-bg: rgba(46, 204, 113, 0.15);
-            --danger: #ff4757;
-            --danger-bg: rgba(255, 71, 87, 0.15);
-            --warning: #ffa502;
-            --option-hover: #2f3542;
+            --danger: #e74c3c;
+            --danger-bg: rgba(231, 76, 60, 0.15);
+            --warning: #f39c12;
+            --option-hover: #202b36;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
@@ -43,16 +43,16 @@
             background-color: var(--container-bg);
             width: 100%;
             max-width: 700px;
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
             animation: fadeIn 0.5s ease-in-out;
             position: relative;
             overflow: hidden;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -67,12 +67,12 @@
             align-items: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .progress {
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-muted);
         }
 
@@ -84,7 +84,7 @@
 
         .timer {
             font-size: 1.5rem;
-            font-weight: 700;
+            font-weight: bold;
             color: var(--warning);
             min-width: 45px;
             text-align: center;
@@ -106,45 +106,44 @@
             color: #fff;
             border: none;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .btn:hover {
             background-color: var(--primary-hover);
-            transform: translateY(-2px);
         }
 
         .btn-danger {
-            background-color: var(--danger);
+            background-color: #cd5a5a;
         }
 
         .btn-danger:hover {
-            background-color: #ff6b81;
+            background-color: #b74e4e;
         }
 
         /* Question Styles */
         .question-text {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             margin-bottom: 25px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .options {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .option {
             background-color: transparent;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px 20px;
-            font-size: 1.1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.05rem;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -154,12 +153,11 @@
 
         .option:hover:not(.disabled) {
             background-color: var(--option-hover);
-            border-color: var(--text-muted);
         }
 
         .option.disabled {
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.8;
         }
 
         .option.correct {
@@ -174,73 +172,70 @@
             color: var(--danger);
         }
 
-        /* Result Styles */
+        /* Telegram Style Result Screen */
         .result-screen {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px 0;
         }
 
-        .result-screen h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 8px solid var(--primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 30px;
-            font-size: 2.5rem;
-            font-weight: bold;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-            background: rgba(0,0,0,0.2);
+        .tg-message {
+            background-color: #1e2c3a; /* Telegram message bubble color */
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 10px;
+            width: 100%;
+            max-width: 450px;
+            text-align: left;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .stat-item {
-            display: flex;
-            flex-direction: column;
+        .tg-message p {
+            margin: 8px 0;
+            font-size: 1.05rem;
         }
 
-        .stat-value {
-            font-size: 1.8rem;
+        .tg-title {
             font-weight: bold;
+            font-size: 1.15rem;
+            margin-bottom: 15px !important;
+            color: #fff;
         }
 
-        .stat-label {
+        .tg-stats {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-style: italic;
+            margin-bottom: 15px !important;
         }
 
-        .feedback {
-            font-size: 1.5rem;
+        .tg-winner {
+            font-weight: 500;
+        }
+
+        .tg-winner a {
+            color: #64b5f6;
+            text-decoration: none;
+        }
+
+        .tg-footer {
+            margin-top: 20px !important;
             font-weight: bold;
-            margin-bottom: 30px;
+            color: #ffca28;
         }
 
         /* Responsive */
         @media (max-width: 600px) {
             .container { padding: 20px; }
             .question-text { font-size: 1.1rem; }
-            .option { font-size: 1rem; padding: 12px 15px; }
+            .option { font-size: 1rem; padding: 12px; }
             .header { flex-wrap: wrap; gap: 15px; }
-            .stats { flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Xom ma'lumotlar bu yerda yashiringan holda saqlanadi -->
     <script id="quizData" type="text/plain">
 Test savollar va to'g'ri javoblar
 1. Texnik qurilmaning ish jarayonidan xarakterlovchi kattaliklar belgilangan qiymatdan sezilarli o'gsa, qurilma qanday a'zolar bilan ta'minlanadi?
@@ -1271,12 +1266,10 @@ D. .m faylni kompilyatsiya qiladi
     </script>
 
     <div class="container" id="app">
-        <!-- Loading -->
         <div id="loading" style="text-align:center; font-size:1.5rem; padding:50px;">
             Savollar yuklanmoqda...
         </div>
 
-        <!-- Quiz Screen -->
         <div id="quiz-screen" class="hidden">
             <div class="header">
                 <div class="progress">Savol <span id="current-q">1</span> / <span id="total-q">0</span></div>
@@ -1290,36 +1283,28 @@ D. .m faylni kompilyatsiya qiladi
             <div class="question-text" id="question-text">Savol matni</div>
             
             <div class="options" id="options-container">
-                <!-- Variantlar JS orqali qo'shiladi -->
-            </div>
+                </div>
         </div>
 
-        <!-- Result Screen -->
         <div id="result-screen" class="result-screen hidden">
-            <h2>Natijalar</h2>
             
-            <div class="score-circle">
-                <span id="res-percent">0</span>%
-            </div>
-
-            <div class="feedback" id="res-feedback">A'lo</div>
-
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-value" id="res-total">0</span>
-                    <span class="stat-label">Jami savollar</span>
+            <div class="tg-message">
+                <div class="tg-title">🏁 "Muhandislik hisoblari" testi yakunlandi!</div>
+                
+                <div class="tg-stats">
+                    <span id="res-answered">0</span> ta savolga javob berildi
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="res-correct">0</span>
-                    <span class="stat-label">To'g'ri javoblar</span>
+                
+                <div class="tg-winner">
+                    🥇 <a href="#">@Bobur_Akramov</a> – <span id="res-score">0</span> (<span id="res-time">0 daqiqa 0 soniya</span>)
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="res-wrong">0</span>
-                    <span class="stat-label">Noto'g'ri / Javobsiz</span>
+
+                <div class="tg-footer">
+                    🏆 O'z ustingizda ishlashda davom eting!
                 </div>
             </div>
 
-            <button class="btn" onclick="location.reload()">Qayta urinib ko'rish</button>
+            <button class="btn" style="width: 100%; max-width: 450px;" onclick="location.reload()">Testni qayta ishlash</button>
         </div>
     </div>
 
@@ -1340,10 +1325,12 @@ D. .m faylni kompilyatsiya qiladi
         let allQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
+        let answeredQuestionsCount = 0; // Nechta savolga javob berilganini hisoblash
         let timeLeft = 30;
         let timerInterval;
         let nextTimeout;
         let isAnswered = false;
+        let quizStartTime; // Test boshlangan vaqtni saqlash uchun
 
         // 1. Data Parser Function
         function parseRawData() {
@@ -1372,7 +1359,6 @@ D. .m faylni kompilyatsiya qiladi
                     let optText = line.replace(/^[A-D]\.\s*/, '');
                     currentQ.options.push(optText);
                     
-                    // Asl ma'lumotlarda to'g'ri javob har doim A variantida berilgan (fakt)
                     if (line.startsWith('A.')) {
                         currentQ.correctOptionOriginalText = optText;
                     }
@@ -1411,6 +1397,8 @@ D. .m faylni kompilyatsiya qiladi
             loadingScreen.classList.add('hidden');
             quizScreen.classList.remove('hidden');
             
+            // Vaqtni yozib olish (umumiy qancha vaqt ketganini hisoblash uchun)
+            quizStartTime = Date.now();
             loadQuestion();
         }
 
@@ -1430,18 +1418,14 @@ D. .m faylni kompilyatsiya qiladi
             
             optionsContainer.innerHTML = '';
             
-            // Shuffle options
             let shuffledOptions = shuffleArray([...q.options]);
             
             shuffledOptions.forEach((optText, index) => {
                 const optDiv = document.createElement('div');
                 optDiv.className = 'option';
                 
-                // Letter prefix A, B, C, D
                 const letter = String.fromCharCode(65 + index);
                 optDiv.innerHTML = `<strong>${letter}.</strong> <span>${optText}</span>`;
-                
-                // Store actual text for checking correctness later
                 optDiv.dataset.text = optText;
                 
                 optDiv.onclick = () => handleSelectOption(optDiv, q.correctOptionOriginalText);
@@ -1455,27 +1439,27 @@ D. .m faylni kompilyatsiya qiladi
             isAnswered = true;
             clearInterval(timerInterval);
             
+            // Bosilgan bo'lsa javob berilganlar sonini bittaga oshiramiz
+            answeredQuestionsCount++;
+            
             const allOptionDivs = optionsContainer.querySelectorAll('.option');
             const selectedText = selectedDiv.dataset.text;
             
             allOptionDivs.forEach(div => {
                 div.classList.add('disabled');
                 
-                // To'g'ri javobni yashil qilish
                 if (div.dataset.text === correctAnswerText) {
                     div.classList.add('correct');
                 }
             });
 
-            // Tekshirish
             if (selectedText === correctAnswerText) {
                 score++;
             } else {
                 selectedDiv.classList.add('wrong');
             }
 
-            // Keyingi savolga avtomatik o'tish (2.5 soniya kutish)
-            nextTimeout = setTimeout(nextQuestion, 2500);
+            nextTimeout = setTimeout(nextQuestion, 2000); // 2 soniya kutib o'tadi
         }
 
         // 6. Timer System
@@ -1503,18 +1487,17 @@ D. .m faylni kompilyatsiya qiladi
             allOptionDivs.forEach(div => {
                 div.classList.add('disabled');
                 if (div.dataset.text === q.correctOptionOriginalText) {
-                    div.classList.add('correct'); // To'g'ri javobni ko'rsatish
+                    div.classList.add('correct');
                 }
             });
 
-            nextTimeout = setTimeout(nextQuestion, 2500);
+            nextTimeout = setTimeout(nextQuestion, 2000);
         }
 
         // 7. Next Question or Finish
         function nextQuestion() {
             currentQuestionIndex++;
             if (currentQuestionIndex < allQuestions.length) {
-                // Kichik animatsiya effekti uchun
                 quizScreen.style.animation = 'none';
                 quizScreen.offsetHeight; 
                 quizScreen.style.animation = 'fadeIn 0.4s ease-in-out';
@@ -1525,38 +1508,23 @@ D. .m faylni kompilyatsiya qiladi
             }
         }
 
-        // 8. Result Screen
+        // 8. Result Screen (Telegram Style)
         function showResults() {
             clearInterval(timerInterval);
             clearTimeout(nextTimeout);
             
+            // Vaqtni hisoblash
+            let quizEndTime = Date.now();
+            let timeDiff = Math.floor((quizEndTime - quizStartTime) / 1000); // sekundlarda
+            let minutes = Math.floor(timeDiff / 60);
+            let seconds = timeDiff % 60;
+            
             quizScreen.classList.add('hidden');
             resultScreen.classList.remove('hidden');
 
-            const total = allQuestions.length;
-            const percentage = Math.round((score / total) * 100);
-
-            document.getElementById('res-total').textContent = total;
-            document.getElementById('res-correct').textContent = score;
-            document.getElementById('res-wrong').textContent = total - score;
-            document.getElementById('res-percent').textContent = percentage;
-
-            const feedbackEl = document.getElementById('res-feedback');
-            const scoreCircle = document.querySelector('.score-circle');
-
-            if (percentage >= 90) {
-                feedbackEl.textContent = "A'lo natija! 🎉";
-                feedbackEl.style.color = "var(--success)";
-                scoreCircle.style.borderColor = "var(--success)";
-            } else if (percentage >= 60) {
-                feedbackEl.textContent = "Yaxshi natija! 👍";
-                feedbackEl.style.color = "var(--warning)";
-                scoreCircle.style.borderColor = "var(--warning)";
-            } else {
-                feedbackEl.textContent = "Qayta urinib ko'ring! 📚";
-                feedbackEl.style.color = "var(--danger)";
-                scoreCircle.style.borderColor = "var(--danger)";
-            }
+            document.getElementById('res-answered').textContent = answeredQuestionsCount;
+            document.getElementById('res-score').textContent = score;
+            document.getElementById('res-time').textContent = `${minutes} daqiqa ${seconds} soniya`;
         }
 
         // Event Listeners
