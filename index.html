@@ -181,7 +181,7 @@
         }
 
         .tg-message {
-            background-color: #1e2c3a; /* Telegram message bubble color */
+            background-color: #1e2c3a;
             border-radius: 12px;
             padding: 20px;
             width: 100%;
@@ -208,6 +208,13 @@
             color: var(--text-muted);
             font-style: italic;
             margin-bottom: 15px !important;
+            line-height: 1.8;
+        }
+
+        .correct-highlight {
+            color: var(--success);
+            font-weight: bold;
+            font-style: normal;
         }
 
         .tg-winner {
@@ -236,6 +243,7 @@
 </head>
 <body>
 
+    <!-- Xom ma'lumotlar -->
     <script id="quizData" type="text/plain">
 Test savollar va to'g'ri javoblar
 1. Texnik qurilmaning ish jarayonidan xarakterlovchi kattaliklar belgilangan qiymatdan sezilarli o'gsa, qurilma qanday a'zolar bilan ta'minlanadi?
@@ -1266,10 +1274,12 @@ D. .m faylni kompilyatsiya qiladi
     </script>
 
     <div class="container" id="app">
+        <!-- Loading -->
         <div id="loading" style="text-align:center; font-size:1.5rem; padding:50px;">
             Savollar yuklanmoqda...
         </div>
 
+        <!-- Quiz Screen -->
         <div id="quiz-screen" class="hidden">
             <div class="header">
                 <div class="progress">Savol <span id="current-q">1</span> / <span id="total-q">0</span></div>
@@ -1283,16 +1293,19 @@ D. .m faylni kompilyatsiya qiladi
             <div class="question-text" id="question-text">Savol matni</div>
             
             <div class="options" id="options-container">
-                </div>
+                <!-- Variantlar JS orqali qo'shiladi -->
+            </div>
         </div>
 
+        <!-- Telegram Style Result Screen -->
         <div id="result-screen" class="result-screen hidden">
             
             <div class="tg-message">
                 <div class="tg-title">🏁 "Muhandislik hisoblari" testi yakunlandi!</div>
                 
                 <div class="tg-stats">
-                    <span id="res-answered">0</span> ta savolga javob berildi
+                    <span id="res-answered">0</span> ta savolga javob berildi.<br>
+                    ✅ To'g'ri javoblar: <span class="correct-highlight"><span id="res-correct-stats">0</span> ta</span>
                 </div>
                 
                 <div class="tg-winner">
@@ -1325,12 +1338,12 @@ D. .m faylni kompilyatsiya qiladi
         let allQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
-        let answeredQuestionsCount = 0; // Nechta savolga javob berilganini hisoblash
+        let answeredQuestionsCount = 0; // Nechta savolga urinish bo'lganini saqlaydi
         let timeLeft = 30;
         let timerInterval;
         let nextTimeout;
         let isAnswered = false;
-        let quizStartTime; // Test boshlangan vaqtni saqlash uchun
+        let quizStartTime; 
 
         // 1. Data Parser Function
         function parseRawData() {
@@ -1343,7 +1356,6 @@ D. .m faylni kompilyatsiya qiladi
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 
-                // Regex: Starts with digit(s) followed by a dot
                 if (/^\d+\./.test(line)) {
                     if (currentQ && currentQ.options.length === 4) {
                         questions.push(currentQ);
@@ -1354,7 +1366,6 @@ D. .m faylni kompilyatsiya qiladi
                         correctOptionOriginalText: '' 
                     };
                 } 
-                // Regex: Starts with A., B., C., or D.
                 else if (/^[A-D]\./.test(line) && currentQ) {
                     let optText = line.replace(/^[A-D]\.\s*/, '');
                     currentQ.options.push(optText);
@@ -1389,15 +1400,12 @@ D. .m faylni kompilyatsiya qiladi
                 return;
             }
 
-            // Shuffle questions
             allQuestions = shuffleArray(allQuestions);
-            
             totalQEl.textContent = allQuestions.length;
             
             loadingScreen.classList.add('hidden');
             quizScreen.classList.remove('hidden');
             
-            // Vaqtni yozib olish (umumiy qancha vaqt ketganini hisoblash uchun)
             quizStartTime = Date.now();
             loadQuestion();
         }
@@ -1439,7 +1447,7 @@ D. .m faylni kompilyatsiya qiladi
             isAnswered = true;
             clearInterval(timerInterval);
             
-            // Bosilgan bo'lsa javob berilganlar sonini bittaga oshiramiz
+            // Foydalanuvchi javob belgiladi
             answeredQuestionsCount++;
             
             const allOptionDivs = optionsContainer.querySelectorAll('.option');
@@ -1459,7 +1467,7 @@ D. .m faylni kompilyatsiya qiladi
                 selectedDiv.classList.add('wrong');
             }
 
-            nextTimeout = setTimeout(nextQuestion, 2000); // 2 soniya kutib o'tadi
+            nextTimeout = setTimeout(nextQuestion, 2000); 
         }
 
         // 6. Timer System
@@ -1483,6 +1491,8 @@ D. .m faylni kompilyatsiya qiladi
             isAnswered = true;
             const q = allQuestions[currentQuestionIndex];
             const allOptionDivs = optionsContainer.querySelectorAll('.option');
+            
+            // Agar vaqt tugasa, "javob berilgan" deb hisoblanmaydi, faqat to'g'ri variant ko'rsatiladi.
             
             allOptionDivs.forEach(div => {
                 div.classList.add('disabled');
@@ -1515,21 +1525,23 @@ D. .m faylni kompilyatsiya qiladi
             
             // Vaqtni hisoblash
             let quizEndTime = Date.now();
-            let timeDiff = Math.floor((quizEndTime - quizStartTime) / 1000); // sekundlarda
+            let timeDiff = Math.floor((quizEndTime - quizStartTime) / 1000); 
             let minutes = Math.floor(timeDiff / 60);
             let seconds = timeDiff % 60;
             
             quizScreen.classList.add('hidden');
             resultScreen.classList.remove('hidden');
 
-            document.getElementById('res-answered').textContent = answeredQuestionsCount;
-            document.getElementById('res-score').textContent = score;
+            // Ma'lumotlarni chiqarish
+            document.getElementById('res-answered').textContent = answeredQuestionsCount; // Nechtasiga urindi
+            document.getElementById('res-correct-stats').textContent = score; // Aniqlik (Yashil yozuv qismi)
+            document.getElementById('res-score').textContent = score; // Jami ball
             document.getElementById('res-time').textContent = `${minutes} daqiqa ${seconds} soniya`;
         }
 
         // Event Listeners
         finishBtn.addEventListener('click', () => {
-            if(confirm("Testni hozir tugatmoqchimisiz? Javob berilmagan savollar noto'g'ri deb hisoblanadi.")) {
+            if(confirm("Testni hozir tugatmoqchimisiz?")) {
                 showResults();
             }
         });
